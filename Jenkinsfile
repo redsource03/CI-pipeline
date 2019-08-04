@@ -40,9 +40,9 @@ pipeline {
                 echo 'Building Application'
                 dir(params.APPLICATION_NAME){
                     script {
+                        sh 'ls'
                         sh 'chmod +x gradlew'
-                        sh './gradlew clean build'   
-                        sg 'ls'  
+                        sh './gradlew clean build'     
                     }
                 }
                 
