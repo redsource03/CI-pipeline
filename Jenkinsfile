@@ -94,9 +94,5 @@ def buildDockerImage (def props, def environment) {
     def containerPort = props["${appName}.${env.PROPERTIES_CONTAINER_PORT_KEY}"]
     def sslPport = props["${appName}.${env.PROPERTIES_SSL_PORT_KEY}"]
 
-    sh "docker build -t ${appName}:${version} --build-arg version=${version} "
-    +"--build-arg projectName=${appName} --build-arg profile=${environment}"
-    +"--build-arg port=${containerPort}"
-
-    sh "docker run -it ${appName}:${version} -p ${sslPport}:${containerPort}"
+    sh "docker build -t ${appName}:${version} --build-arg version=${version} --build-arg projectName=${appName} --build-arg profile=${environment} --build-arg port=${containerPort} ."
 }
