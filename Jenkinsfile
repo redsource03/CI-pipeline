@@ -41,7 +41,8 @@ pipeline {
                 dir(params.APPLICATION_NAME){
                     script {
                         sh 'chmod +x gradlew'
-                        sh './gradlew clean build'     
+                        sh './gradlew clean build'   
+                        sg 'ls'  
                     }
                 }
                 
