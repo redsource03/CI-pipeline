@@ -26,6 +26,10 @@ pipeline {
         stage('Git Checkout') {
             steps {
                 echo 'Pulling Project from Git..'
+                script {
+                    sh "rm -rf ./$params.APPLICATION_NAME"
+                    sh "mkdir $params.APPLICATION_NAME"
+                }
                 dir(params.APPLICATION_NAME){
                     git(
                         url: "${GIT_URL}${APPLICATION_NAME}.git",
