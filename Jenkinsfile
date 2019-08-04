@@ -53,15 +53,16 @@ pipeline {
                 expression {
                     return params.DEPLOY_TO_DEV
                 }
+            }
+            steps {
+                echo 'Deploying to Dev environment'
+
                 dir(params.APPLICATION_NAME) {
                     script {
                         def deploymentProps = loadDeploymentProperties(env.workspace + '/', env.DEPLOYMENT_PROPERTIES_FILE)
                         buildDockerImage(deploymentProps,'dev')
                     }
                 }
-            }
-            steps {
-                echo 'Deploying to Dev environment'
             }
         }
     }
