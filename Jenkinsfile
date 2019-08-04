@@ -92,7 +92,7 @@ def buildDockerImage (def props, def environment) {
     def appName = params.APPLICATION_NAME
     def version = params.VERSION
     def containerPort = props["${appName}.${env.PROPERTIES_CONTAINER_PORT_KEY}"]
-    def sslPport = props["${appName}.${env.PROPERTIES_SSL_PORT_KEY}"]
+    def sslPort = props["${appName}.${env.PROPERTIES_SSL_PORT_KEY}"]
 
     sh "echo ${containerPort} - ${sslPort}"
     sh "echo ${props}"
