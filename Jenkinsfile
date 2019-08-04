@@ -2,11 +2,17 @@ pipeline {
     agent any
     environment {
         GIT_URL = "https://github.com/redsource03/"
+
+        DEPLOYMENT_PROPERTIES_FILE = "deployment.properties"
+
+        PROPERTIES_CONTAINER_PORT_KEY = "containerPort"
+        PROPERTIES_SSL_PORT_KEY = "sslPort"
     }
     parameters {
         string(name: 'APPLICATION_NAME', defaultValue: '', description: 'Application name. Github Application name such as https://github.com/redsource03/${APPLICATION_NAME}')
         string(name: 'BPG_PIPELINE_BRANCH', defaultValue: 'master', description: 'BPG pipeline branch')
         string(name: 'GIT_BRANCH', defaultValue: 'master', description: 'git branch or tag to build')
+        string(name: 'VERSION', defaultValue: '0.0.1-SNAPSHOT', description: 'project version')
         string(name: 'ECS_TIMEOUT', defaultValue: '20', description: 'Timeout value of deployment to ECS in minutes')
 
         booleanParam(name: 'DEPLOY_TO_DEV', defaultValue: true, description: 'Deploy to Dev Environment?')
@@ -47,6 +53,12 @@ pipeline {
                 expression {
                     return params.DEPLOY_TO_DEV
                 }
+                dir(params.APPLICATION_NAME) {
+                    script {
+                        def deploymentProps = loadDeploymentProperties(env.workspace + '/', env.DEPLOYMENT_PROPERTIES_FILE)
+                        buildDockerImage(deploymentProps,'dev')
+                    }
+                }
             }
             steps {
                 echo 'Deploying to Dev environment'
@@ -60,4 +72,22 @@ pipeline {
             cleanWs()
         }
     }
+}
+
+def loadDeploymentProperties(String path, String file) {
+  def props = readProperties file: "${path}" + "${file}"
+  return props
+}
+
+def buildDockerImage (def props, def environment) {
+    def appName = params.APPLICATION_NAME
+    def version = params.VERSION
+    def containerPort = deploymentProps["${appName}.${env.PROPERTIES_CONTAINER_PORT_KEY}"]
+    def sslPport = deploymentProps["${appName}.${env.PROPERTIES_SSL_PORT_KEY}"]
+
+    sh "docker build -t ${appName}:${version} --build-arg version=${version} "
+    +"--build-arg projectName=${appName} --build-arg profile=${environment}"
+    +"--build-arg port=${containerPort}"
+
+    sh "docker run -it ${appName}:${version} -p ${sslPport}:${containerPort}"
 }
