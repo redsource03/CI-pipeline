@@ -2,6 +2,7 @@ pipeline {
     agent any
     environment {
         GIT_URL = "https://github.com/redsource03/"
+        GIT_CREDS_ID = "Github-redsource"
 
         DEPLOYMENT_PROPERTIES_FILE = "deployment.properties"
 
@@ -31,11 +32,14 @@ pipeline {
                     sh "mkdir $params.APPLICATION_NAME"
                 }
                 dir(params.APPLICATION_NAME){
-                    git(
-                        url: "${GIT_URL}${APPLICATION_NAME}.git",
-                        credentialsId: 'Github-redsource',
-                        branch: "${GIT_BRANCH}"
-                    )    
+                    checkout scm: [
+                            $class           : 'GitSCM',
+                            userRemoteConfigs: [[
+                                                        credentialsId: "${GIT_CREDS_ID}",
+                                                        url          : "${GIT_URL}${APPLICATION_NAME}.git"]],
+                            branches         : [[name: "${GIT_BRANCH}"]]
+                        ], poll: false
+                    }    
                 }
             }
         }
