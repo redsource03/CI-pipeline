@@ -39,7 +39,7 @@ pipeline {
                                                         url          : "${GIT_URL}${APPLICATION_NAME}.git"]],
                             branches         : [[name: "${GIT_BRANCH}"]]
                         ], poll: false
-                    }    
+                        
                 }
             }
         }
