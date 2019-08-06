@@ -64,9 +64,12 @@ pipeline {
             }
             steps {
                 echo 'Deploying to Dev environment'
-                def appName = params.APPLICATION_NAME
-                def sourcePath = env.workspace
-                sh "cp ${sourcePath}/Dockerfile ."
+                
+                script {
+                    def appName = params.APPLICATION_NAME
+                    def sourcePath = env.workspace
+                    sh "cp Dockerfile ${appName}/"
+                }
 
                 dir(params.APPLICATION_NAME) {
                     script {
