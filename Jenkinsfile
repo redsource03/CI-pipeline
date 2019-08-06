@@ -64,13 +64,14 @@ pipeline {
             }
             steps {
                 echo 'Deploying to Dev environment'
+                sh "ls"
 
                 dir(params.APPLICATION_NAME) {
                     script {
                         def deploymentProps = loadDeploymentProperties(env.workspace + '/', env.DEPLOYMENT_PROPERTIES_FILE)
                         def appName = params.APPLICATION_NAME
                         def sourcePath = env.workspace
-                        sh "cp ${sourcePath}/Dockerfile ${sourcePath}/${appName}"
+                        sh "cp ${sourcePath}/Dockerfile ."
                         buildDockerImage(deploymentProps,'dev')
                     }
                 }
