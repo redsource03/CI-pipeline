@@ -47,7 +47,7 @@ pipeline {
             steps {
                 echo 'Building Application'
                 dir(params.APPLICATION_NAME){
-                    script {\
+                    script {
                         sh 'chmod +x gradlew'
                         sh './gradlew clean build'     
                     }
@@ -68,6 +68,8 @@ pipeline {
                 dir(params.APPLICATION_NAME) {
                     script {
                         def deploymentProps = loadDeploymentProperties(env.workspace + '/', env.DEPLOYMENT_PROPERTIES_FILE)
+                        def appName = params.APPLICATION_NAME
+                        sh "cp ${sourcePath}/Dockerfile ${sourcePath}/${appName}"
                         buildDockerImage(deploymentProps,'dev')
                     }
                 }
@@ -93,9 +95,6 @@ def buildDockerImage (def props, def environment) {
     def version = params.VERSION
     def containerPort = props["${appName}.${env.PROPERTIES_CONTAINER_PORT_KEY}"]
     def sslPort = props["${appName}.${env.PROPERTIES_SSL_PORT_KEY}"]
-
-    sh "echo ${containerPort} - ${sslPort}"
-    sh "echo ${props}"
 
     sh "docker build -t ${appName}:${version} --build-arg version=${version} --build-arg projectName=${appName} --build-arg profile=${environment} --build-arg port=${containerPort} ."
 }
